@@ -11,6 +11,6 @@ rule download:
     shell:
         """
         fasterq-dump {wildcards.sample} --split-files --threads {threads} --outdir {RAW_DIR} > {log} 2>&1
-        gzip {RAW_DIR}/{wildcards.sample}_1.fastq.gz >> {log} 2>&1
-        gzip {RAW_DIR}/{wildcards.sample}_2.fastq.gz >> {log} 2>&1
+        gzip {RAW_DIR}/{wildcards.sample}_1.fastq >> {log} 2>&1
+        gzip {RAW_DIR}/{wildcards.sample}_2.fastq >> {log} 2>&1
         """
