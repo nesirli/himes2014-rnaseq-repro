@@ -1,0 +1,9 @@
+name: 01_sra_tools_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - sra-tools=3.4.1
+variables:
+  CONDA_SUBDIR: osx-64

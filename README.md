@@ -1,0 +1,1 @@
+## Reproducible RNA-Seq analysis pipeline investigating glucocorticoid-responsive genes in airway smooth muscle cells using the Himes et al. dataset

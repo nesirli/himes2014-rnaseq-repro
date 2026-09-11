@@ -1,0 +1,7 @@
+# Directories
+directories:
+  raw: "data/raw"
+
+# Paramaters
+params:
+  download-threads: 4

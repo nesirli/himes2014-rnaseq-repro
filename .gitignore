@@ -1,0 +1,35 @@
+# Snakemake
+.snakemake/
+snakemake-*.log
+
+# SRA / fasterq-dump temp files
+fasterq.tmp.*/
+*.sra
+*.fastq
+*.fastq.gz
+data/raw/*
+!data/raw/.gitkeep
+
+# Logs
+logs/
+
+# Conda / environments
+.conda/
+envs/*.lock
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
