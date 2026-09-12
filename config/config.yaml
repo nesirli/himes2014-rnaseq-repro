@@ -1,7 +1,8 @@
 # Directories
 directories:
   raw: "data/raw"
+  reference: "data/reference"
 
 # Paramaters
 params:
-  download-threads: 4
+  download-threads: 1

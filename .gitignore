@@ -9,6 +9,8 @@ fasterq.tmp.*/
 *.fastq.gz
 data/raw/*
 !data/raw/.gitkeep
+data/reference/*
+!data/reference/.gitkeep
 
 # Logs
 logs/
