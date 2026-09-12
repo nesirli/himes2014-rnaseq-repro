@@ -1,2 +1,0 @@
-rule multiqc:
-    pass

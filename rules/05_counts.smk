@@ -1,2 +1,0 @@
-rule featurecounts:
-    pass

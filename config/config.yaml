@@ -2,7 +2,15 @@
 directories:
   raw: "data/raw"
   reference: "data/reference"
+  qc: "results/qc"
+  trim: "data/trim"
+  align: "results/align"
 
 # Paramaters
 params:
   download-threads: 1
+  qc-threads: 4
+  index-threads: 8
+  trim-threads: 4
+  align-threads: 8
+  phred-cutoff: 20
