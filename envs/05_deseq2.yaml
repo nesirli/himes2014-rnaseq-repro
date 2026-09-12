@@ -1,0 +1,10 @@
+name: deseq2_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base=4.3.3
+  - bioconductor-deseq2=1.42.0
+variables:
+  CONDA_SUBDIR: osx-64
