@@ -12,5 +12,6 @@ params:
   qc-threads: 4
   index-threads: 8
   trim-threads: 4
+  count-threads: 4
   align-threads: 8
   phred-cutoff: 20

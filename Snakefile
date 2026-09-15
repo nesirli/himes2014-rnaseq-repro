@@ -34,10 +34,12 @@ rule all:
         f"{QC_DIR}/post_trim/multiqc_report.html",
         expand(f"{ALIGN_DIR}/{{sample}}.sorted.bam", sample=SAMPLES),
         expand(f"{ALIGN_DIR}/{{sample}}.sorted.bam.bai", sample=SAMPLES),
+        "results/counts/gene_counts.txt"
+
 
 include: "rules/01_download.smk"
 include: "rules/02_qc_trim.smk"
 include: "rules/03_index_align.smk"
-# include: "rules/04_counts.smk"
+include: "rules/04_counts.smk"
 # include: "rules/05_deseq2.smk"
 # include: "rules/06_figures.smk"
