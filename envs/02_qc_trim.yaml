@@ -7,5 +7,3 @@ dependencies:
   - fastqc=0.12.1
   - fastp=0.24.3
   - multiqc=1.35
-variables:
-  CONDA_SUBDIR: osx-64

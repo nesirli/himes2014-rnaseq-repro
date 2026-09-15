@@ -5,5 +5,3 @@ channels:
   - defaults
 dependencies:
   - subread=2.1.1
-variables:
-  CONDA_SUBDIR: osx-64
