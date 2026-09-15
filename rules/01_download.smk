@@ -50,6 +50,24 @@ rule merge_stats:
         done
         """
 
+rule gene_id2name:
+    input:
+        gtf=f"{REF_DIR}/Homo_sapiens.GRCh38.110.gtf"
+    output:
+        f"{REF_DIR}/gene_id2name.tsv"
+    log:
+        "logs/download/gene_id2name.log"
+    shell:
+        """
+        awk 'BEGIN {{ FS = OFS = "\t" }}
+             $3 == "gene" {{
+                 id = ""; nm = ""
+                 if (match($9, /gene_id "[^"]+"/))   id = substr($9, RSTART + 9,  RLENGTH - 10)
+                 if (match($9, /gene_name "[^"]+"/)) nm = substr($9, RSTART + 11, RLENGTH - 12)
+                 if (id != "") print id, nm
+             }}' {input.gtf} > {output} 2> {log}
+        """
+
 rule download_reference:
     output:
         genome=f"{REF_DIR}/Homo_sapiens.GRCh38.dna.primary_assembly.fa",

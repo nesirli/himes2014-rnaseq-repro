@@ -31,6 +31,7 @@ rule all:
         f"{REF_DIR}/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
         f"{REF_DIR}/Homo_sapiens.GRCh38.110.gtf",
         f"{REF_DIR}/reference_integrity.txt",
+        f"{REF_DIR}/gene_id2name.tsv",
         f"{QC_DIR}/post_trim/multiqc_report.html",
         expand(f"{ALIGN_DIR}/{{sample}}.sorted.bam", sample=SAMPLES),
         expand(f"{ALIGN_DIR}/{{sample}}.sorted.bam.bai", sample=SAMPLES),
