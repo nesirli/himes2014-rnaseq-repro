@@ -98,3 +98,36 @@ rule download_reference:
 
         gunzip -f {REF_DIR}/Homo_sapiens.GRCh38.110.gtf.gz >> {log} 2>&1
         """
+
+rule download_index:
+    output:
+        multiext(f"{HISAT2_INDEX_DIR}/genome",
+                ".1.ht2", ".2.ht2", ".3.ht2", ".4.ht2",
+                ".5.ht2", ".6.ht2", ".7.ht2", ".8.ht2")
+    log:
+        "logs/download/download_index.log"
+    conda:
+        "../envs/01_download.yaml"
+    resources:
+        mem_mb=2000
+    params:
+        url=config["params"]["hisat2-index-url"],
+        index_dir=HISAT2_INDEX_DIR
+    shell:
+        """
+        set -euo pipefail
+        mkdir -p {params.index_dir}
+        tmp=$(mktemp -d)
+        trap 'rm -rf "$tmp"' EXIT
+        curl -L --fail --retry 5 --retry-delay 5 --no-progress-meter \
+            -o "$tmp/index.tar.gz" {params.url} >> {log} 2>&1
+        tar -xzf "$tmp/index.tar.gz" -C "$tmp" >> {log} 2>&1
+        n=$(find "$tmp" -name '*.ht2' | wc -l | tr -d ' ')
+        if [ "$n" -ne 8 ]; then
+            echo "expected 8 .ht2 files, found $n" >&2
+            exit 1
+        fi
+        find "$tmp" -name '*.ht2' | while read -r f; do
+            mv "$f" "{params.index_dir}/genome.$(basename "$f" | cut -d. -f2-)"
+        done
+        """

@@ -7,6 +7,7 @@ RAW_DIR = config["directories"]["raw"]
 REF_DIR = config["directories"]["reference"]
 QC_DIR = config["directories"]["qc"]
 TRIM_DIR = config["directories"]["trim"]
+HISAT2_INDEX_DIR = config["directories"]["hisat_index"]
 ALIGN_DIR = config["directories"]["align"]
 
 # Sample accessions from GSE52778
@@ -44,6 +45,6 @@ rule all:
 
 include: "rules/01_download.smk"
 include: "rules/02_qc_trim.smk"
-include: "rules/03_index_align.smk"
+include: "rules/03_align.smk"
 include: "rules/04_counts.smk"
 include: "rules/05_deseq2.smk"

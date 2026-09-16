@@ -5,6 +5,7 @@ directories:
   qc: "results/qc"
   trim: "data/trim"
   align: "results/align"
+  hisat_index: "data/reference/hisat2_index/prebuilt"
 
 # Paramaters
 params:

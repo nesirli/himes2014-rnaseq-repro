@@ -1,4 +1,4 @@
-name: index_align_env
+name: align_env
 channels:
   - conda-forge
   - bioconda
