@@ -10,6 +10,8 @@ rule feature_counts:
         "../envs/04_counts.yaml"
     threads:
         config["params"]["count-threads"]
+    resources:
+        mem_mb=8000
     shell:
         """
         featureCounts \

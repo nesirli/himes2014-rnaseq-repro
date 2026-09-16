@@ -12,6 +12,8 @@ rule hisat2_index:
         "../envs/03_index_align.yaml"
     threads:
         config["params"]["index-threads"]
+    resources:
+        mem_mb=200000
     params:
         index_dir=f"{REF_DIR}/hisat2_index"
     shell:
@@ -41,6 +43,8 @@ rule hisat2_align:
         "../envs/03_index_align.yaml"
     threads:
         config["params"]["align-threads"]
+    resources:
+        mem_mb=16000
     params:
         index=f"{REF_DIR}/hisat2_index/genome"
     shell:

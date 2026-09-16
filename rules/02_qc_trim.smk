@@ -11,6 +11,8 @@ rule pre_trim_fastqc:
         "../envs/02_qc_trim.yaml"
     threads:
         config["params"]["qc-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         mkdir -p {QC_DIR}/pre_trim
@@ -29,6 +31,8 @@ rule pre_trim_multi_qc:
         "../envs/02_qc_trim.yaml"
     threads:
         config["params"]["qc-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         multiqc {QC_DIR}/pre_trim -o {QC_DIR}/pre_trim > {log} 2>&1
@@ -50,6 +54,8 @@ rule trim:
         "../envs/02_qc_trim.yaml"
     threads:
         config["params"]["trim-threads"]
+    resources:
+        mem_mb=4000
     params:
         min_qual=config["params"]["phred-cutoff"]
     shell:
@@ -76,6 +82,8 @@ rule post_trim_fastqc:
         "../envs/02_qc_trim.yaml"
     threads:
         config["params"]["qc-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         mkdir -p {QC_DIR}/post_trim
@@ -94,6 +102,8 @@ rule post_trim_multi_qc:
         "../envs/02_qc_trim.yaml"
     threads:
         config["params"]["qc-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         multiqc {QC_DIR}/post_trim -o {QC_DIR}/post_trim > {log} 2>&1

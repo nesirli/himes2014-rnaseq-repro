@@ -9,6 +9,8 @@ rule download_samples:
         "../envs/01_download.yaml"
     threads:
         config["params"]["download-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         set -euo pipefail
@@ -41,6 +43,8 @@ rule merge_stats:
         expand(f"{RAW_DIR}/{{sample}}_stats.txt", sample=SAMPLES)
     output:
         f"{RAW_DIR}/data_stats.txt"
+    resources:
+        mem_mb=1000
     shell:
         """
         set -euo pipefail
@@ -57,6 +61,8 @@ rule gene_id2name:
         f"{REF_DIR}/gene_id2name.tsv"
     log:
         "logs/download/gene_id2name.log"
+    resources:
+        mem_mb=1000
     shell:
         """
         awk 'BEGIN {{ FS = OFS = "\t" }}
@@ -79,6 +85,8 @@ rule download_reference:
         "../envs/01_download.yaml"
     threads:
         config["params"]["download-threads"]
+    resources:
+        mem_mb=2000
     shell:
         """
         set -euo pipefail

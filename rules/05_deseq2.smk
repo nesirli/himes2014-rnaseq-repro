@@ -10,6 +10,8 @@ rule deseq2:
         heatmap="results/figures/heatmap_top30.png"
     log:
         "logs/deseq2/deseq2.log"
+    resources:
+        mem_mb=8000
     conda:
         "../envs/05_deseq2.yaml"
     script:

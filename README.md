@@ -1,5 +1,12 @@
 # Himes 2014 RNA-seq reproduction
 
+[![Snakemake](https://img.shields.io/badge/Snakemake-%E2%89%A57-039475)](https://snakemake.readthedocs.io/)
+[![Conda](https://img.shields.io/badge/Conda-environments-44A833?logo=anaconda&logoColor=white)](https://docs.conda.io/)
+[![HISAT2](https://img.shields.io/badge/HISAT2-aligner-1f6feb)](https://daehwankimlab.github.io/hisat2/)
+[![featureCounts](https://img.shields.io/badge/featureCounts-subread-555555)](https://subread.sourceforge.net/)
+[![DESeq2](https://img.shields.io/badge/DESeq2-Bioconductor-276DC3)](https://bioconductor.org/packages/DESeq2/)
+[![R](https://img.shields.io/badge/R-Bioconductor-276DC3?logo=r&logoColor=white)](https://www.r-project.org/)
+
 Reproduction of Himes et al. (2014), *RNA-Seq Transcriptome Profiling Identifies
 CRISPLD2 as a Glucocorticoid Responsive Gene that Modulates Cytokine Function in
 Airway Smooth Muscle Cells*, using a Snakemake pipeline that downloads the raw
@@ -45,6 +52,17 @@ snakemake --use-conda --cores 8
 
 Thread counts and the Phred cutoff can be adjusted in `config/config.yaml`.
 Conda environments are created automatically on first run.
+
+`--cores` is the **total** CPU budget, not a per-job cap, and must be at least
+the largest per-rule value in `config/config.yaml` (currently 8 for
+`index-threads`/`align-threads`). Set it to your machine's core count to run
+independent samples in parallel — e.g. `--cores 16` runs two 8-thread alignments
+at once.
+
+Rules also declare `resources: mem_mb`, which Snakemake enforces if you pass
+`--resources mem_mb=<N>`. Note that building the HISAT2 index with `--ss`/`--exon`
+needs ~200 GB of RAM for the human genome; on smaller machines, drop those flags
+in `rules/03_index_align.smk` to index with ~8 GB instead.
 
 ## Outputs
 
