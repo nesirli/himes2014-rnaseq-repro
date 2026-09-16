@@ -10,8 +10,8 @@ directories:
 params:
   download-threads: 1
   qc-threads: 4
-  index-threads: 8
   trim-threads: 4
   count-threads: 4
   align-threads: 8
   phred-cutoff: 20
+  hisat2-index-url: "https://genome-idx.s3.amazonaws.com/hisat/grch38_tran.tar.gz"

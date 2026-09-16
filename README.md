@@ -20,17 +20,22 @@ with DESeq2.
 - **Samples (paired-end):**
   - Untreated: `SRR1039508`, `SRR1039512`, `SRR1039516`, `SRR1039520`
   - Dexamethasone-treated: `SRR1039509`, `SRR1039513`, `SRR1039517`, `SRR1039521`
-- **Reference:** Ensembl *Homo sapiens* GRCh38, release 110 (FASTA + GTF,
-  checksum-verified on download)
+- **Reference:** Ensembl *Homo sapiens* GRCh38, release 110 GTF
+  (checksum-verified on download)
+- **Aligner index:** prebuilt HISAT2 GRCh38 `genome_tran` index (transcript-aware
+  graph index) from the [AWS Public Datasets](https://registry.opendata.aws/jhu-indexes/),
+  downloaded rather than built locally
 
 ## Pipeline
 
 1. **Download** — `prefetch`/`fasterq-dump` retrieve the SRA runs and
-   `vdb-validate` checks integrity; the Ensembl genome/GTF are verified against
-   Ensembl's `CHECKSUMS` manifests.
+   `vdb-validate` checks integrity; the Ensembl GTF is verified against Ensembl's
+   `CHECKSUMS` manifest; the prebuilt HISAT2 `genome_tran` index is fetched from
+   AWS.
 2. **QC & trimming** — FastQC before and after `fastp` trimming, summarized with
    MultiQC.
-3. **Alignment** — HISAT2 (splice-aware index built from the GTF) + `samtools`.
+3. **Alignment** — HISAT2 against the prebuilt `genome_tran` graph index +
+   `samtools`.
 4. **Quantification** — `featureCounts` (paired-end, reverse-stranded).
 5. **Differential expression** — DESeq2 (`~condition`), with figures.
 
@@ -55,18 +60,15 @@ Conda environments are created automatically on first run.
 
 `--cores` is the **total** CPU budget, not a per-job cap, and must be at least
 the largest per-rule value in `config/config.yaml` (currently 8 for
-`index-threads`/`align-threads`). Set it to your machine's core count to run
-independent samples in parallel — e.g. `--cores 16` runs two 8-thread alignments
-at once.
+`align-threads`). Set it to your machine's core count to run independent samples
+in parallel — e.g. `--cores 16` runs two 8-thread alignments at once.
 
 Rules also declare `resources: mem_mb`, which Snakemake enforces if you pass
 `--resources mem_mb=<N>`.
 
-**Memory warning:** the annotation-aware HISAT2 index (`--ss`/`--exon`) needs
-roughly **200 GB of RAM** for the human genome, because it builds a graph index;
-a plain build without those flags only needs ~6–8 GB. On a smaller machine,
-either build the index on a high-memory host, or skip the annotation-aware index
-and pass the splice sites at alignment time with `--known-splicesite-infile`.
+The HISAT2 index is **downloaded** (~4.1 GB tarball) instead of built locally, so
+no large-memory machine is required. The index URL is configurable via
+`params.hisat2-index-url` in `config/config.yaml`.
 
 ## Outputs
 

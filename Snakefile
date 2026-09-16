@@ -28,7 +28,6 @@ rule all:
     input:
         expand(f"{RAW_DIR}/{{sample}}_1.fastq.gz", sample=SAMPLES),
         f"{RAW_DIR}/data_stats.txt",
-        f"{REF_DIR}/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
         f"{REF_DIR}/Homo_sapiens.GRCh38.110.gtf",
         f"{REF_DIR}/reference_integrity.txt",
         f"{REF_DIR}/gene_id2name.tsv",

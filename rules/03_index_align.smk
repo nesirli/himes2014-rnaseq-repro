@@ -1,37 +1,43 @@
-rule hisat2_index:
-    input:
-        genome=f"{REF_DIR}/Homo_sapiens.GRCh38.dna.primary_assembly.fa",
-        gtf=f"{REF_DIR}/Homo_sapiens.GRCh38.110.gtf"
+HISAT2_INDEX_DIR = f"{REF_DIR}/hisat2_index/prebuilt"
+
+rule download_index:
     output:
-        multiext(f"{REF_DIR}/hisat2_index/genome",
+        multiext(f"{HISAT2_INDEX_DIR}/genome",
                 ".1.ht2", ".2.ht2", ".3.ht2", ".4.ht2",
                 ".5.ht2", ".6.ht2", ".7.ht2", ".8.ht2")
-    log: 
-        "logs/index_align/hisat2_index.log"
+    log:
+        "logs/index_align/download_index.log"
     conda:
         "../envs/03_index_align.yaml"
-    threads:
-        config["params"]["index-threads"]
     resources:
-        mem_mb=200000
+        mem_mb=2000
     params:
-        index_dir=f"{REF_DIR}/hisat2_index"
+        url=config["params"]["hisat2-index-url"],
+        index_dir=HISAT2_INDEX_DIR
     shell:
         """
+        set -euo pipefail
         mkdir -p {params.index_dir}
-        hisat2_extract_splice_sites.py {input.gtf} > {params.index_dir}/genome.ss 2>> {log}
-        hisat2_extract_exons.py {input.gtf} > {params.index_dir}/genome.exon 2>> {log}
-        hisat2-build -p {threads} \
-            --ss {params.index_dir}/genome.ss \
-            --exon {params.index_dir}/genome.exon \
-            {input.genome} {params.index_dir}/genome >> {log} 2>&1
+        tmp=$(mktemp -d)
+        trap 'rm -rf "$tmp"' EXIT
+        curl -L --fail --retry 5 --retry-delay 5 --no-progress-meter \
+            -o "$tmp/index.tar.gz" {params.url} >> {log} 2>&1
+        tar -xzf "$tmp/index.tar.gz" -C "$tmp" >> {log} 2>&1
+        n=$(find "$tmp" -name '*.ht2' | wc -l | tr -d ' ')
+        if [ "$n" -ne 8 ]; then
+            echo "expected 8 .ht2 files, found $n" >&2
+            exit 1
+        fi
+        find "$tmp" -name '*.ht2' | while read -r f; do
+            mv "$f" "{params.index_dir}/genome.$(basename "$f" | cut -d. -f2-)"
+        done
         """
 
 rule hisat2_align:
     input:
         r1=f"{TRIM_DIR}/{{sample}}_1_trim.fastq.gz",
         r2=f"{TRIM_DIR}/{{sample}}_2_trim.fastq.gz",
-        index=multiext(f"{REF_DIR}/hisat2_index/genome",
+        index=multiext(f"{HISAT2_INDEX_DIR}/genome",
                 ".1.ht2", ".2.ht2", ".3.ht2", ".4.ht2",
                 ".5.ht2", ".6.ht2", ".7.ht2", ".8.ht2")
     output:
@@ -46,7 +52,7 @@ rule hisat2_align:
     resources:
         mem_mb=16000
     params:
-        index=f"{REF_DIR}/hisat2_index/genome"
+        index=f"{HISAT2_INDEX_DIR}/genome"
     shell:
         """
         mkdir -p {ALIGN_DIR}
