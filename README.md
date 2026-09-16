@@ -21,7 +21,7 @@ with DESeq2.
   - Untreated: `SRR1039508`, `SRR1039512`, `SRR1039516`, `SRR1039520`
   - Dexamethasone-treated: `SRR1039509`, `SRR1039513`, `SRR1039517`, `SRR1039521`
 - **Reference:** Ensembl *Homo sapiens* GRCh38, release 110 GTF
-  (checksum-verified on download)
+  (checksum-verified on download; see `data/reference/reference_integrity.txt`)
 - **Aligner index:** prebuilt HISAT2 GRCh38 `genome_tran` index (transcript-aware
   graph index) from the [AWS Public Datasets](https://registry.opendata.aws/jhu-indexes/),
   downloaded rather than built locally
@@ -38,6 +38,28 @@ with DESeq2.
    `samtools`.
 4. **Quantification** — `featureCounts` (paired-end, reverse-stranded).
 5. **Differential expression** — DESeq2 (`~condition`), with figures.
+
+## Tools and versions
+
+| Tool | Version | Stage |
+| --- | --- | --- |
+| Snakemake | 9.26.1 | workflow |
+| sra-tools | 3.4.1 | download |
+| wget | 1.25.0 | download |
+| seqkit | 2.13.0 | download |
+| FastQC | 0.12.1 | QC |
+| fastp | 0.24.3 | trimming |
+| MultiQC | 1.35 | QC |
+| HISAT2 | 2.2.3 | alignment |
+| SAMtools | 1.24 | alignment |
+| featureCounts (Subread) | 2.1.1 | quantification |
+| R | 4.5.3 | differential expression |
+| DESeq2 | 1.50.2 | differential expression |
+| ggplot2 | 4.0.3 | figures |
+| pheatmap | 1.0.13 | figures |
+
+The exact versions are pinned in the `envs/` files. The reference is Ensembl
+GRCh38 release 110, and the aligner uses the prebuilt HISAT2 `genome_tran` index.
 
 ## Requirements
 
@@ -81,11 +103,35 @@ no large-memory machine is required. The index URL is configurable via
 | PCA plot | `results/figures/pca.png` |
 | Top-30 heatmap | `results/figures/heatmap_top30.png` |
 
-## Validation
+## Results
 
-Differential expression recovers the known dexamethasone-responsive genes
-`CRISPLD2`, `DUSP1`, `KLF15`, `PER1`, and `TSC22D3`, all significantly
-upregulated (padj < 0.05, log2FC > 1), confirming the reproduction is successful.
+The run reproduces the main results of the paper.
+
+- **Alignment:** 97.7–98.9% overall alignment rate for all 8 samples. All BAM
+  files pass `samtools quickcheck`.
+- **Counting:** 7.6–15.4 million reads were assigned to genes per sample. The
+  unassigned categories look normal.
+- **Differential expression:** 835 significant genes — 463 up and 372 down.
+- **Validation:** the five known dexamethasone-responsive genes are all
+  significant (padj < 0.05, log2FC > 1): `CRISPLD2`, `DUSP1`, `KLF15`, `PER1`
+  and `TSC22D3`.
+- **Figures:** the volcano plot, PCA plot and top-30 heatmap are in
+  `results/figures/`. `results/de/significant_genes.csv` has 835 rows.
+
+## Data and reference integrity
+
+The pipeline writes simple text files so you can check the inputs:
+
+- `data/raw/{sample}_stats.txt` — read count and read length for each downloaded
+  FASTQ file. `data/raw/data_stats.txt` joins all samples in one table.
+- `data/reference/reference_integrity.txt` — two lines for the Ensembl GTF: the
+  local checksum and the checksum from Ensembl's `CHECKSUMS` file. When the two
+  values match, the reference is complete and correct.
+- `results/counts/gene_counts.txt.summary` — for each sample, how many reads
+  `featureCounts` assigned to genes and how many it did not assign.
+
+The pipeline also runs `vdb-validate` on every SRA file. This compares each file
+with NCBI's stored checksums before converting it to FASTQ.
 
 ## Repository structure
 
