@@ -3,8 +3,11 @@ rule deseq2:
         counts="results/counts/gene_counts.txt",
         gene_map=f"{REF_DIR}/gene_id2name.tsv"
     output:
-        all="results/de/all_results.csv",
-        sig="results/de/significant_genes.csv"
+        all_results="results/de/all_results.csv",
+        sig="results/de/significant_genes.csv",
+        volcano="results/figures/volcano.png",
+        pca="results/figures/pca.png",
+        heatmap="results/figures/heatmap_top30.png"
     log:
         "logs/deseq2/deseq2.log"
     conda:

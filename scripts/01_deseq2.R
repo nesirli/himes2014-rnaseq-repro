@@ -10,9 +10,9 @@ if (exists("snakemake") && length(snakemake@log) > 0) {
 }
 
 counts_file   <- "results/counts/gene_counts.txt"
-  gene_map_file <- "data/reference/gene_id2name.tsv"
-  all_file      <- "results/de/all_results.csv"
-  sig_file      <- "results/de/significant_genes.csv"
+gene_map_file <- "data/reference/gene_id2name.tsv"
+all_file      <- "results/de/all_results.csv"
+sig_file      <- "results/de/significant_genes.csv"
 
 # ── Load counts ──
 raw <- read.delim(counts_file, comment.char = '#')
@@ -83,3 +83,39 @@ for (g in known_genes) {
 dir.create(dirname(all_file), showWarnings = FALSE, recursive = TRUE)
 write.csv(as.data.frame(res), all_file, row.names = TRUE)
 write.csv(as.data.frame(sig), sig_file, row.names = TRUE)
+
+# ── Figure output directory ──
+fig_dir <- "results/figures"
+dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
+
+# ── Volcano plot ──
+df <- as.data.frame(res)
+df$sig <- !is.na(df$padj) & df$padj < 0.05 & abs(df$log2FoldChange) > 1
+
+p_volcano <- ggplot(df, aes(log2FoldChange, -log10(padj), color=sig)) +
+  geom_point(size=0.5, alpha=0.5) +
+  scale_color_manual(values=c("grey70","red3"), labels=c("NS","Significant")) +
+  geom_hline(yintercept=-log10(0.05), linetype="dashed", color="grey50") +
+  geom_vline(xintercept=c(-1, 1), linetype="dashed", color="grey50") +
+  labs(title="Dexamethasone vs Untreated — Airway Smooth Muscle",
+       subtitle=paste(nrow(sig), "significant DE genes (|log2FC| > 1, padj < 0.05)"),
+       x="Log2 Fold Change", y="-Log10 Adjusted P-value", color="") +
+  theme_minimal(base_size=12)
+ggsave(file.path(fig_dir, "volcano.png"), p_volcano, width=7, height=5, dpi=300)
+
+# ── PCA ──
+vsd <- vst(dds)
+p_pca <- plotPCA(vsd, intgroup="condition") +
+  theme_minimal() +
+  labs(title="PCA — Samples should cluster by condition")
+ggsave(file.path(fig_dir, "pca.png"), p_pca, width=7, height=5, dpi=300)
+
+# ── Heatmap of top 30 DE genes ──
+top30 <- head(rownames(res[order(res$padj),]), 30)
+mat <- assay(vsd)[top30, ]
+
+pheatmap(mat, scale="row", annotation_col=coldata,
+         color=colorRampPalette(c("navy","white","firebrick3"))(100),
+         fontsize_row=8, main="Top 30 DE Genes",
+         filename=file.path(fig_dir, "heatmap_top30.png"),
+         width=7, height=8)
