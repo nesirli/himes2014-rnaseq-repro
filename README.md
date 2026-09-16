@@ -60,9 +60,13 @@ independent samples in parallel — e.g. `--cores 16` runs two 8-thread alignmen
 at once.
 
 Rules also declare `resources: mem_mb`, which Snakemake enforces if you pass
-`--resources mem_mb=<N>`. Note that building the HISAT2 index with `--ss`/`--exon`
-needs ~200 GB of RAM for the human genome; on smaller machines, drop those flags
-in `rules/03_index_align.smk` to index with ~8 GB instead.
+`--resources mem_mb=<N>`.
+
+**Memory warning:** the annotation-aware HISAT2 index (`--ss`/`--exon`) needs
+roughly **200 GB of RAM** for the human genome, because it builds a graph index;
+a plain build without those flags only needs ~6–8 GB. On a smaller machine,
+either build the index on a high-memory host, or skip the annotation-aware index
+and pass the splice sites at alignment time with `--known-splicesite-infile`.
 
 ## Outputs
 

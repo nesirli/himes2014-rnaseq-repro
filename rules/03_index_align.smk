@@ -19,8 +19,8 @@ rule hisat2_index:
     shell:
         """
         mkdir -p {params.index_dir}
-        hisat2_extract_splice_sites.py {input.gtf} > {params.index_dir}/genome.ss >> {log} 2>&1
-        hisat2_extract_exons.py {input.gtf} > {params.index_dir}/genome.exon >> {log} 2>&1
+        hisat2_extract_splice_sites.py {input.gtf} > {params.index_dir}/genome.ss 2>> {log}
+        hisat2_extract_exons.py {input.gtf} > {params.index_dir}/genome.exon 2>> {log}
         hisat2-build -p {threads} \
             --ss {params.index_dir}/genome.ss \
             --exon {params.index_dir}/genome.exon \
